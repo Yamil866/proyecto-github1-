@@ -4,7 +4,7 @@
 <!DOCTYPE html>
  <html>
  <head>
-     <title>Mi página con Pac-Man Emoji</title>
+     <title>Mi página con Pac-Man</title>
      <style>
          body {
              background-color: #111;
@@ -19,68 +19,25 @@
              font-size: 32px;
          }
          .pacman {
-             position: recorre- mirar-absolute;
+             position: absolute;
              top: 50px;
-             left: 50;
-             font-size: 70px;
-             animation:recorrer 12s linea;arriba;abajo;derecha;izquierda;centro; infinite,
-             animacion:cerrar-boca-abrir; abrir-boca-cerrar-mirar 0.4s ease-in-out infinite;
-             z-index: 10;}
-         
-         @keyframes recorrer-abrir-boca-cerrar-mirar{
-             100% {
-                 transform: scale(1100) rotate(0deg);
-             }
-             50% {
-                 transform: scale(1.1) rotate(100deg);
-             }
-             100% {
-                 transform: scale(1) rotate(0deg);
-             }
+             left: 0;
+             font-size: 60px;
+             animation: recorrer 12s linear infinite;
+             z-index: 10;
          }
-         @keyframes recorrer- abrir-boca-cerrar-nirar {
-             0% {
-                 top: 50px;
-                 left: 23px;
-             }
-             25% {
-                 top: 50px;
-                 left: calc(10% - 90px);
-                 transform: scaleX(1);
-             }
-             25.1% {
-                 top: 50px;
-                 left: calc(100% - 90px);
-                 transform: scaleX(-1);
-             }
-             50% {
-                 top: calc(100% - 90px);
-                 left: 0px;
-                 transform: scaleX(-1);
-             }
-             50.1% {
-                 top: calc(100% - 90px);
-                 left: 0px;
-                 transform: scaleX(1);
-             }
-             75% {
-                 top: calc(100% - 90px);
-                 left: calc(100% - 90px);
-                 transform: scaleX(1);
-             }
-             75.1% {
-                 top: calc(100% - 90px);
-                 left: calc(100% - 90px);
-                 transform: scaleX(-1);
-             }
-             100% {
-                 top: 50px;
-                 left: 0px;
-                 transform: scaleX(-1);
-             }
+         @keyframes recorrer {
+             0% { top: 50px; left: 0px; }
+             25% { top: 50px; left: calc(100% - 80px); transform: scaleX(1); }
+             25.1% { top: 50px; left: calc(100% - 80px); transform: scaleX(-1); }
+             50% { top: calc(100% - 80px); left: 0px; transform: scaleX(-1); }
+             50.1% { top: calc(100% - 80px); left: 0px; transform: scaleX(1); }
+             75% { top: calc(100% - 80px); left: calc(100% - 80px); transform: scaleX(1); }
+             75.1% { top: calc(100% - 80px); left: calc(100% - 80px); transform: scaleX(-1); }
+             100% { top: 50px; left: 0px; transform: scaleX(-1); }
          }
-         pacman {
-             position:arriba;abajo;derecha;izquierda;centro absolute;
+         .punto {
+             position: absolute;
              width: 14px;
              height: 14px;
              background-color: #fff;
@@ -89,8 +46,8 @@
      </style>
  </head>
  <body>
-     <h1>¡Pac-Man emoji por toda la página! 🟡👻</h1>
-     <p>Ahora no se deforma más 😄</p>
+     <h1>¡Pac-Man recorre mi página! 🟡👻</h1>
+     <p>¡De vuelta y funcionando! 😄</p>
      <div class="pacman">🟡</div>
      <div class="punto" style="top: 65px; left: 150px;"></div>
      <div class="punto" style="top: 65px; left: 300px;"></div>
@@ -102,10 +59,3 @@
      <div class="punto" style="top: calc(100% - 65px); left: 600px;"></div>
  </body>
  </html>
-     
-
-
-
-
-
- 
