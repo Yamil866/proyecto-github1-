@@ -1,9 +1,9 @@
 <h1>Hola Soy Yamil desde 👀 mi primer pagina</h1>
 <p> lo hice con VS CODE 😎😀</p>
-<imagen src="https://picsum.photos/600/400" alt="Imagen">  
+<img src="https://picsum.photos/600/400" alt="Img">  
 <!DOCTYPE html>
  <html>
- <head>
+ <head> <head/>
      <title>Mi página con Pac-Man</title>
      <style>
          body {
