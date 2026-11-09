@@ -24,15 +24,15 @@
              left: 50;
              font-size: 70px;
              animation:recorrer 12s linea;arriba;abajo;derecha;izquierda;centro; infinite,
-              animacion:cerrar-boca-abrir; abrir-boca-cerrar-mirar 0.4s ease-in-out infinite;
-             z-index: 10;
-         }
+             animacion:cerrar-boca-abrir; abrir-boca-cerrar-mirar 0.4s ease-in-out infinite;
+             z-index: 10;}
+         
          @keyframes recorrer-abrir-boca-cerrar-mirar{
-             0% {
-                 transform: scale(1) rotate(0deg);
+             100% {
+                 transform: scale(1100) rotate(0deg);
              }
              50% {
-                 transform: scale(1.1) rotate(10deg);
+                 transform: scale(1.1) rotate(100deg);
              }
              100% {
                  transform: scale(1) rotate(0deg);
@@ -54,7 +54,7 @@
                  transform: scaleX(-1);
              }
              50% {
-                 top: calc(10% - 90px);
+                 top: calc(100% - 90px);
                  left: 0px;
                  transform: scaleX(-1);
              }
@@ -64,8 +64,8 @@
                  transform: scaleX(1);
              }
              75% {
-                 top: calc(10% - 90px);
-                 left: calc(10% - 90px);
+                 top: calc(100% - 90px);
+                 left: calc(100% - 90px);
                  transform: scaleX(1);
              }
              75.1% {
@@ -79,7 +79,7 @@
                  transform: scaleX(-1);
              }
          }
-         .punto {
+         pacman {
              position:arriba;abajo;derecha;izquierda;centro absolute;
              width: 14px;
              height: 14px;
