@@ -1,52 +1,73 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Mi página</title>
+    <title>Mi página con OVNI</title>
     <style>
         body {
-            background-color: #111;
+            background-color: #0b0b2b;
             font-family: Arial, sans-serif;
             text-align: center;
-            padding-top: 80px;
+            padding-top: 60px;
             color: white;
             overflow: hidden;
+            margin: 0;
         }
-        h1 { color: #ffeb3b; font-size: 32px; }
-        img { max-width: 400px; border-radius: 10px; margin: 20px auto; display: block; }
-        .pacman {
+
+        h1 {
+            color: #ffeb3b;
+            font-size: 32px;
+        }
+
+        img {
+            max-width: 400px;
+            border-radius: 10px;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .ovni {
             position: absolute;
-            top: 50px; left: 0; font-size: 60px;
-            animation: recorrer 12s linear infinite; z-index: 10;
+            font-size: 50px;
+            animation: volar 15s linear infinite;
+            z-index: 10;
         }
-        @keyframes recorrer {
+
+        @keyframes volar {
             0% { top: 50px; left: 0px; }
-            25% { top: 50px; left: calc(100% - 80px); transform: scaleX(1); }
-            25.1% { top: 50px; left: calc(100% - 80px); transform: scaleX(-1); }
-            50% { top: calc(100% - 80px); left: 0px; transform: scaleX(-1); }
-            50.1% { top: calc(100% - 80px); left: 0px; transform: scaleX(1); }
-            75% { top: calc(100% - 80px); left: calc(100% - 80px); transform: scaleX(1); }
-            75.1% { top: 50px; left: calc(100% - 80px); transform: scaleX(-1); }
-            100% { top: 50px; left: 0px; transform: scaleX(-1); }
+            25% { top: 100px; left: calc(100% - 70px); }
+            50% { top: calc(100% - 150px); left: calc(100% - 70px); }
+            75% { top: calc(100% - 150px); left: 0px; }
+            100% { top: 50px; left: 0px; }
         }
-        .punto {
-            position: absolute; width: 14px; height: 14px;
-            background-color: #fff; border-radius: 50%;
+
+        .luz {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #90EE90;
+            border-radius: 50%;
+            animation: parpadear 2s alternate infinite;
+        }
+
+        @keyframes parpadear {
+            0% { opacity: 0.3; }
+            100% { opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <h1>Hola Soy Yamil desde 👀 mi primer página</h1>
+    <h1>¡Hola Soy Yamil! 🛸👽</h1>
     <p>Lo hice con VS CODE 😎😀</p>
+
     <img src="https://picsum.photos/600/400" alt="Imagen bonita">
-    <p>¡Pac-Man recorre mi página! 🟡👻</p>
-    <div class="pacman">🟡</div>
-    <div class="punto" style="top: 280px; left: 150px;"></div>
-    <div class="punto" style="top: 280px; left: 300px;"></div>
-    <div class="punto" style="top: 280px; left: 450px;"></div>
-    <div class="punto" style="top: 280px; left: 600px;"></div>
-    <div class="punto" style="top: calc(100% - 65px); left: 150px;"></div>
-    <div class="punto" style="top: calc(100% - 65px); left: 300px;"></div>
-    <div class="punto" style="top: calc(100% - 65px); left: 450px;"></div>
-    <div class="punto" style="top: calc(100% - 65px); left: 600px;"></div>
+
+    <div class="ovni">🛸</div>
+
+    <div class="luz" style="top: 80px; left: 100px;"></div>
+    <div class="luz" style="top: 150px; left: 250px; animation-delay: 0.3s;"></div>
+    <div class="luz" style="top: 200px; left: 500px; animation-delay: 0.6s;"></div>
+    <div class="luz" style="top: 300px; left: 180px; animation-delay: 0.9s;"></div>
+    <div class="luz" style="top: 400px; left: 600px; animation-delay: 1.2s;"></div>
+    <div class="luz" style="top: 500px; left: 350px; animation-delay: 1.5s;"></div>
 </body>
 </html>
