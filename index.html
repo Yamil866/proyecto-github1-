@@ -54,7 +54,44 @@
             background-color: #90EE90;
             border-radius: 50%;
             animation: parpadear 2s alternate infinite;
-        }
+        } 
+        
+.cometa {
+    position: absolute;
+    width: 2px;
+    height: 80px;
+    background: linear-gradient(to bottom, white, transparent);
+    border-radius: 50%;
+    opacity: 0;
+    z-index: 5;
+}
+
+.cometa-cola {
+    position: absolute;
+    width: 2px;
+    height: 60px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.8), transparent);
+    border-radius: 50%;
+    transform: rotate(45deg);
+    z-index: 4;
+}
+
+@keyframes cruzarCometa {
+    0% {
+        transform: translateX(-100px) translateY(-100px);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(120vw) translateY(100vh);
+        opacity: 0;
+    }
+}
 
         @keyframes parpadear {
             0% { opacity: 0.3; }
