@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Mi página con misterios 🕵️</title>
+    <title>Mi primer pagina web 🙂</title>
     <style>
         body {
             background-color: #0b0b2b;
@@ -196,11 +196,36 @@
     <div class="cometa" style="top: 55%; animation: cruzarCometa 6s linear infinite; animation-delay: 4s;"></div>
     <div class="cometa" style="top: 75%; animation: cruzarCometa 5s linear infinite; animation-delay: 6s;"></div>
 
-    <h3>🔘 Botones Secretos</h3>
+    <h3><a href="juego.html" style="text-decoration: none;">
+  <div class="boton-secreto">1</div>
+</a>
+
+<style>
+.boton-secreto {
+  background: rgba(255, 235, 59, 0.9);
+  border: 2px solid #ffeb3b;
+  border-radius: 15px;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 500px;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.boton-secreto:hover {
+  background: rgba(255, 235, 59, 1);
+  transform: scale(1.05);
+}
+</style>
+
+               
     
-    <button class="boton-secreto" onclick="mostrarSeccion1()">✨ Misterio 1</button>
-    <button class="boton-secreto" onclick="mostrarSeccion2()">🌙 Misterio 2</button>
-    <button class="boton-secreto" onclick="mostrarSeccion3()">📊 Gráfico</button>
+    <button class="boton-secreto" onclick="mostrarSeccion1()">✨ Mision 1</button>
+    <button class="boton-secreto" onclick="mostrarSeccion2()">🌙 Mision 2</button>
+    <button class="boton-secreto" onclick="mostrarSeccion3()">📊 Mapa galáctico</button>
 
     <div id="seccion1" class="caja-secreta">
         <h3>🌟 ¡Descubriste el primer secreto!</h3>
@@ -218,9 +243,9 @@
         <h3>📊 Gráfico de Opciones</h3>
         <p>Elegí qué quieres ver:</p>
         
-        <button class="opcion-grafico" onclick="cambiarGrafico(1)">📈 Proyecto A</button>
-        <button class="opcion-grafico" onclick="cambiarGrafico(2)">📉 Proyecto B</button>
-        <button class="opcion-grafico" onclick="cambiarGrafico(3)">🌡️ Proyecto C</button>
+        <button class="opcion-grafico" onclick="cambiarGrafico(1)">🔩 Reparar Nave A</button>
+        <button class="opcion-grafico" onclick="cambiarGrafico(2)">🧭Explorar B</button>
+        <buton class="opcion-grafico" onclick="cambiarGrafico(3)">🆘 Rescata a marvin C</button>
 
         <div class="contenedor-grafico">
             <div id="barra1" class="barra" style="background: #ff6b6b; width: 0%;">Dato 1</div>
