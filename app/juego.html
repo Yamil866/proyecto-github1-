@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Defensor del Espacio</title>
+    <style>
+        body {
+            margin: 0;
+            background: #000022;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        canvas {
+            border: 3px solid #444;
+            background: #000033;
+        }
+        .volver {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: #2196F3;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+        }
+        .volver:hover {
+            background: #1976D2;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="volver">← Volver</a>
+    <canvas id="lienzo" width="800" height="600"></canvas>
+
+    <script>
+        const canvas = document.getElementById('lienzo');
+        const ctx = canvas.getContext('2d');
+        
+        let ovni = { x: 370, y: 520, ancho: 50, alto: 40 };
+        let balas = [];
+        let rocas = [];
+        let puntuacion = 0;
+        let teclas = {};
+        let tiempo = 0;
+
+        document.addEventListener('keydown', e => teclas[e.key] = true);
+        document.addEventListener('keyup', e => teclas[e.key] = false);
+
+        function disparar() {
+            balas.push({ x: ovni.x + ovni.ancho/2 - 3, y: ovni.y, ancho: 6, alto: 15 });
+        }
+
+        function crearRoca() {
+            let tam = Math.random() * 35 + 25;
+            rocas.push({
+                x: Math.random() * (canvas.width - tam),
+                y: -tam,
+                ancho: tam,
+                alto: tam,
+                velocidad: Math.random() * 2 + 0.8
+            });
+        }
+
+        function dibujarOvni() {
+            ctx.fillStyle = '#00e5ff';
+            ctx.beginPath();
+            ctx.ellipse(ovni.x + ovni.ancho/2, ovni.y + 15, 28, 12, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#80d8ff';
+            ctx.beginPath();
+            ctx.arc(ovni.x + ovni.ancho/2, ovni.y + 5, 14, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffff00';
+            ctx.beginPath();
+            ctx.arc(ovni.x + 12, ovni.y + 22, 4, 0, Math.PI * 2);
+            ctx.arc(ovni.x + 38, ovni.y + 22, 4, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function dibujarBalas() {
+            ctx.fillStyle = '#ffff00';
+            balas.forEach(b => ctx.fillRect(b.x, b.y, b.ancho, b.alto));
+        }
+
+        function dibujarRocas() {
+            rocas.forEach(r => {
+                ctx.fillStyle = '#666';
+                ctx.beginPath();
+                ctx.arc(r.x + r.ancho/2, r.y + r.alto/2, r.ancho/2, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        function colision(a, b) {
+            return a.x < b.x + b.ancho &&
+                   a.x + a.ancho > b.x &&
+                   a.y < b.y + b.alto &&
+                   a.y + a.alto > b.y;
+        }
+
+        function bucle() {
+            tiempo++;
+            
+            if (teclas['ArrowLeft'] && ovni.x > 0) ovni.x -= 5;
+            if (teclas['ArrowRight'] && ovni.x < canvas.width - ovni.ancho) ovni.x += 5;
+
+            if (tiempo % 24 === 0) disparar();
+
+            balas = balas.filter(b => { b.y -= 9; return b.y > -20; });
+
+            if (Math.random() < 0.035) crearRoca();
+            rocas = rocas.filter(r => { r.y += r.velocidad; return r.y < canvas.height + 60; });
+
+            balas.forEach((b, i) => {
+                rocas.forEach((r, j) => {
+                    if (colision(b, r)) {
+                        balas.splice(i, 1);
+                        rocas.splice(j, 1);
+                        puntuacion += 15;
+                    }
+                });
+            });
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            dibujarOvni();
+            dibujarBalas();
+            dibujarRocas();
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 22px Arial';
+            ctx.fillText(`⭐ Puntos: ${puntuacion}`, 20, 35);
+            
+            requestAnimationFrame(bucle);
+        }
+
+        bucle();
+    </script>
+
+</body>
+</html>
