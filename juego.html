@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🛸 Misión 1 — Defensor Espacial</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #000; overflow: hidden; font-family: Arial; }
+        canvas { display: block; background: #000; }
+        .ui { position: absolute; top: 10px; left: 15px; color: white; z-index: 10; font-size: 18px; }
+        .corazon { color: red; font-size: 24px; }
+        .puntos { color: #ffeb3b; margin-left: 20px; }
+        .mejorada { color: #00ff88; font-size: 14px; margin-top: 5px; }
+        .volver { position: absolute; top: 10px; right: 15px; color: #aaa; text-decoration: none; font-size: 16px; z-index: 20; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="volver">← Volver</a>
+
+    <div class="ui">
+        <span class="corazon" id="vidas">❤️❤️❤️</span>
+        <span class="puntos">Puntos: <span id="puntaje">0</span></span>
+        <div class="mejorada" id="estado-nave">Nave: Estándar</div>
+    </div>
+
+    <canvas id="juego"></canvas>
+
+    <script>
+        const canvas = document.getElementById('juego');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let nave = { x: canvas.width/2 - 30, y: canvas.height - 100, w: 60, h: 40, velocidad: 6 };
+        let balas = [], rocas = [], comida = [], meteoros = [];
+        let puntaje = 0, vidas = 3, naveMejorada = false;
+        let teclas = {}, ultimoDisparo = 0, estrellas = [];
+
+        // ⭐ Fondo de estrellas
+        for(let i=0; i<250; i++) {
+            estrellas.push({
+                x: Math.random()*canvas.width,
+                y: Math.random()*canvas.height,
+                tam: Math.random()*2 + 0.3,
+                brillo: Math.random()
+            });
+        }
+
+        // Controles
+        document.addEventListener('keydown', e => teclas[e.key] = true);
+        document.addEventListener('keyup', e => teclas[e.key] = false);
+
+        // Recuperar nave mejorada
+        if(localStorage.getItem('naveMejorada') === 'si') {
+            naveMejorada = true;
+            nave.velocidad = 9;
+            document.getElementById('estado-nave').textContent = 'Nave: ⚡MEJORADA⚡';
+        }
+
+        function loop() {
+            // 🌌 Dibujar fondo
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0,0,canvas.width,canvas.height);
+            estrellas.forEach(s => {
+                ctx.fillStyle = rgba(255,255,255,${0.2 + s.brillo*0.8});
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.tam, 0, Math.PI*2);
+                ctx.fill();
+                s.brillo += (Math.random()-0.5)*0.02;
+                s.brillo = Math.max(0.1, Math.min(1, s.brillo));
+            });
+
+            // 🛸 Mover nave
+            if(teclas['ArrowLeft'] && nave.x > 0) nave.x -= nave.velocidad;
+            if(teclas['ArrowRight'] && nave.x < canvas.width - nave.w) nave.x += nave.velocidad;
+            if(teclas['ArrowUp'] && nave.y > canvas.height/2) nave.y -= nave.velocidad;
+            if(teclas['ArrowDown'] && nave.y < canvas.height - nave.h - 20) nave.y += nave.velocidad;
+
+            // 🔫 Disparo automático
+            if(Date.now() - ultimoDisparo > (naveMejorada ? 250 : 400)) {
+                balas.push({x: nave.x + nave.w/2 - 3, y: nave.y, w: 6, h: 15});
+                if(naveMejorada) {
+                    balas.push({x: nave.x + 10, y: nave.y + 10, w: 4, h: 12});
+                    balas.push({x: nave.x + nave.w - 14, y: nave.y + 10, w: 4, h: 12});
+                }
+                ultimoDisparo = Date.now();
+            }
+
+            // Mover balas
+            balas = balas.filter(b => {
+                b.y -= 8;
+                ctx.fillStyle = naveMejorada ? '#00ff88' : '#ffeb3b';
+                ctx.fillRect(b.x, b.y, b.w, b.h);
+                return b.y > -20;
+            });
+
+            // 🪨 Generar rocas deformes
+            if(Math.random() < 0.025) {
+                rocas.push({
+                    x: Math.random()*(canvas.width-70),
