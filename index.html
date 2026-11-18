@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Mi primer pagina web 🙂</title>
+    <title>Mi página con misterios 🕵️</title>
     <style>
         body {
             background-color: #0b0b2b;
@@ -91,82 +91,47 @@
             100% { opacity: 1; }
         }
 
-        .boton-secreto {
-            background: linear-gradient(45deg, #4a00e0, #8e2de2);
-            color: white;
-            border: none;
-            padding: 12px 25px;
+        /* 🔩 BOTONES ESTILO METÁLICO */
+        .contenedor-botones {
+            margin-top: 30px;
+            position: relative;
+            z-index: 20;
+        }
+
+        .boton-metal {
+            display: inline-block;
+            width: 200px;
             margin: 10px;
-            font-size: 16px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            position: relative;
-            z-index: 20;
-        }
-
-        .boton-secreto:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 20px #8e2de2;
-            border-color: #fff;
-        }
-
-        .caja-secreta {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid #ffeb3b;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px auto;
-            max-width: 500px;
-            display: none;
-            animation: aparecer 0.5s ease;
-            position: relative;
-            z-index: 20;
-        }
-
-        @keyframes aparecer {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .contenedor-grafico {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid #4CAF50;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px auto;
-            max-width: 600px;
-            position: relative;
-            z-index: 20;
-        }
-
-        .barra {
-            margin: 10px;
+            padding: 15px 20px;
+            background: linear-gradient(145deg, #5a5a5a, #3a3a3a);
+            border: 2px solid #777;
             border-radius: 8px;
-            color: white;
-            padding: 8px;
-            transition: width 0.6s ease;
+            color: #f0f0f0;
+            font-size: 16px;
             font-weight: bold;
-        }
-
-        .opcion-grafico {
-            background: #333;
-            color: white;
-            border: 1px solid #666;
-            padding: 8px 15px;
-            margin: 5px;
-            border-radius: 5px;
             cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            box-shadow: 
+                inset 0 1px 0 rgba(255,255,255,0.1),
+                0 4px 0 #222;
         }
 
-        .opcion-grafico:hover {
-            background: #444;
+        .boton-metal:hover {
+            background: linear-gradient(145deg, #6a6a6a, #4a4a4a);
+            transform: translateY(-2px);
+            box-shadow: 
+                inset 0 1px 0 rgba(255,255,255,0.15),
+                0 6px 8px rgba(0,0,0,0.4);
         }
 
-        h3, p {
-            position: relative;
-            z-index: 20;
+        .boton-metal:active {
+            transform: translateY(2px);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .icono {
+            margin-right: 8px;
         }
     </style>
 </head>
@@ -179,116 +144,4 @@
     <div class="ovni">🛸</div>
 
     <!-- ⭐ ESTRELLAS ARRIBA DE LA IMAGEN -->
-    <div class="luz" style="top: 60px; left: 80px;"></div>
-    <div class="luz" style="top: 90px; left: 200px; animation-delay: 0.4s;"></div>
-    <div class="luz" style="top: 50px; left: 400px; animation-delay: 0.8s;"></div>
-    <div class="luz" style="top: 110px; left: 600px; animation-delay: 1.2s;"></div>
-    
-    <!-- ⭐ ESTRELLAS ABAJO DE LA IMAGEN -->
-    <div class="luz" style="top: 520px; left: 100px; animation-delay: 0.2s;"></div>
-    <div class="luz" style="top: 580px; left: 300px; animation-delay: 0.6s;"></div>
-    <div class="luz" style="top: 550px; left: 550px; animation-delay: 1s;"></div>
-    <div class="luz" style="top: 620px; left: 750px; animation-delay: 1.4s;"></div>
-
-    <!-- ☄️ COMETAS -->
-    <div class="cometa" style="top: 15%; animation: cruzarCometa 4s linear infinite; animation-delay: 0s;"></div>
-    <div class="cometa" style="top: 35%; animation: cruzarCometa 5s linear infinite; animation-delay: 2s;"></div>
-    <div class="cometa" style="top: 55%; animation: cruzarCometa 6s linear infinite; animation-delay: 4s;"></div>
-    <div class="cometa" style="top: 75%; animation: cruzarCometa 5s linear infinite; animation-delay: 6s;"></div>
-
-    <h3><a href="juego.html" style="text-decoration: none;">
-  <div class="boton-secreto">1</div>
-</a>
-
-<style>
-.boton-secreto {
-  background: rgba(255, 235, 59, 0.9);
-  border: 2px solid #ffeb3b;
-  border-radius: 15px;
-  padding: 20px;
-  margin: 20px auto;
-  max-width: 500px;
-  font-size: 24px;
-  font-weight: bold;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.boton-secreto:hover {
-  background: rgba(255, 235, 59, 1);
-  transform: scale(1.05);
-}
-</style>
-
-               
-    
-    <button class="boton-secreto" onclick="mostrarSeccion1()">✨ Mision 1</button>
-    <button class="boton-secreto" onclick="mostrarSeccion2()">🌙 Mision 2</button>
-    <button class="boton-secreto" onclick="mostrarSeccion3()">📊 Mapa galáctico</button>
-
-    <div id="seccion1" class="caja-secreta">
-        <h3>🌟 ¡Descubriste el primer secreto!</h3>
-        <p>Esto estaba escondido aquí esperándote 😏</p>
-        <p>Podemos escribir lo que quieras: mensajes, fotos, enlaces...</p>
-    </div>
-
-    <div id="seccion2" class="caja-secreta">
-        <h3>🌑 Segundo secreto revelado</h3>
-        <p>Solo aparece cuando tocás el botón</p>
-        <p>¿Cuántos más encontraremos? 👀</p>
-    </div>
-
-    <div id="seccion3" class="caja-secreta">
-        <h3>📊 Gráfico de Opciones</h3>
-        <p>Elegí qué quieres ver:</p>
-        
-        <button class="opcion-grafico" onclick="cambiarGrafico(1)">🔩 Reparar Nave A</button>
-        <button class="opcion-grafico" onclick="cambiarGrafico(2)">🧭Explorar B</button>
-        <buton class="opcion-grafico" onclick="cambiarGrafico(3)">🆘 Rescata a marvin C</button>
-
-        <div class="contenedor-grafico">
-            <div id="barra1" class="barra" style="background: #ff6b6b; width: 0%;">Dato 1</div>
-            <div id="barra2" class="barra" style="background: #4ecdc4; width: 0%;">Dato 2</div>
-            <div id="barra3" class="barra" style="background: #ffe066; width: 0%;">Dato 3</div>
-            <div id="barra4" class="barra" style="background: #95e1d3; width: 0%;">Dato 4</div>
-        </div>
-    </div>
-
-    <script>
-        function mostrarSeccion1() {
-            document.getElementById('seccion1').style.display = 'block';
-            document.getElementById('seccion2').style.display = 'none';
-            document.getElementById('seccion3').style.display = 'none';
-        }
-
-        function mostrarSeccion2() {
-            document.getElementById('seccion1').style.display = 'none';
-            document.getElementById('seccion2').style.display = 'block';
-            document.getElementById('seccion3').style.display = 'none';
-        }
-
-        function mostrarSeccion3() {
-            document.getElementById('seccion1').style.display = 'none';
-            document.getElementById('seccion2').style.display = 'none';
-            document.getElementById('seccion3').style.display = 'block';
-            cambiarGrafico(1);
-        }
-
-        function cambiarGrafico(opcion) {
-            let datos;
-            if (opcion === 1) {
-                datos = [80, 60, 90, 45];
-            } else if (opcion === 2) {
-                datos = [30, 70, 50, 85];
-            } else {
-                datos = [95, 20, 75, 65];
-            }
-
-            for (let i = 1; i <= 4; i++) {
-                document.getElementById('barra' + i).style.width = datos[i-1] + '%';
-            }
-        }
-    </script>
-</body>
-</html>
+    <div class="luz" style="top: 60px; left: 80px;"></div
