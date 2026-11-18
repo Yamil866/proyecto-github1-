@@ -103,3 +103,108 @@
                 ctx.fillStyle = '#ffeb3b';
                 ctx.fillRect(b.x, b.y, b.w, b.h);
                 return b.x < canvas.width;
+                <!DOCTYPE html>
+<html>
+<head>
+    <title>🌙 Misión 2 — Invasión Lunar</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #000; overflow: hidden; font-family: Arial; }
+        canvas { display: block; background: #000; }
+        .ui { position: absolute; top: 10px; left: 15px; color: white; z-index: 10; font-size: 18px; }
+        .volver { position: absolute; top: 10px; right: 15px; color: #aaa; text-decoration: none; font-size: 16px; z-index: 20; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="volver">← Volver</a>
+    <div class="ui">Puntos: <span id="puntaje">0</span> &nbsp; ❤️ <span id="vidas">3</span></div>
+    <canvas id="juego"></canvas>
+
+    <script>
+        const canvas = document.getElementById('juego');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let nave = { x: 100, y: canvas.height/2, w: 50, h: 35, vel: 5 };
+        let balas = [], aliens = [], comida = [];
+        let puntaje = 0, vidas = 3, teclas = {}, ultimoDisparo = 0;
+        let estrellas = [], montañaArriba = [], montañaAbajo = [];
+
+        // ⭐ Estrellas de fondo
+        for(let i=0; i<200; i++) {
+            estrellas.push({
+                x: Math.random()*canvas.width,
+                y: Math.random()*canvas.height,
+                tam: Math.random()*1.5 + 0.3
+            });
+        }
+
+        // 🌑 Montañas arriba
+        for(let x=0; x<canvas.width+50; x+=40) {
+            montañaArriba.push({x, h: 40 + Math.random()*80});
+        }
+        // 🌑 Montañas abajo
+        for(let x=0; x<canvas.width+50; x+=40) {
+            montañaAbajo.push({x, h: 40 + Math.random()*80});
+        }
+
+        document.addEventListener('keydown', e => teclas[e.key] = true);
+        document.addEventListener('keyup', e => teclas[e.key] = false);
+
+        function loop() {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0,0,canvas.width,canvas.height);
+
+            // Estrellas
+            estrellas.forEach(s => {
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.tam, 0, Math.PI*2);
+                ctx.fill();
+            });
+
+            // 🌑 Montañas lunares ARRIBA
+            ctx.fillStyle = '#2a2a2a';
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            montañaArriba.forEach(m => {
+                ctx.lineTo(m.x, m.h);
+                m.x -= 0.3;
+                if(m.x < -40) { m.x = canvas.width + 40; m.h = 40 + Math.random()*80; }
+            });
+            ctx.lineTo(canvas.width, 0);
+            ctx.closePath();
+            ctx.fill();
+
+            // 🌑 Montañas lunares ABAJO
+            ctx.fillStyle = '#2a2a2a';
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height);
+            montañaAbajo.forEach(m => {
+                ctx.lineTo(m.x, canvas.height - m.h);
+                m.x -= 0.3;
+                if(m.x < -40) { m.x = canvas.width + 40; m.h = 40 + Math.random()*80; }
+            });
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.closePath();
+            ctx.fill();
+
+            // 🛸 Mover nave
+            if(teclas['ArrowUp'] && nave.y > montañaArriba[0].h + 20) nave.y -= nave.vel;
+            if(teclas['ArrowDown'] && nave.y < canvas.height - montañaAbajo[0].h - nave.h - 10) nave.y += nave.vel;
+            if(teclas['ArrowRight'] && nave.x < canvas.width - nave.w - 20) nave.x += nave.vel;
+            if(teclas['ArrowLeft'] && nave.x > 20) nave.x -= nave.vel;
+
+            // 🔫 Disparo con barra espaciadora
+            if(teclas[' '] && Date.now() - ultimoDisparo > 350) {
+                balas.push({x: nave.x + nave.w, y: nave.y + nave.h/2 - 3, w: 12, h: 6});
+                ultimoDisparo = Date.now();
+            }
+
+            // Mover balas
+            balas = balas.filter(b => {
+                b.x += 10;
+                ctx.fillStyle = '#ffeb3b';
+                ctx.fillRect(b.x, b.y, b.w, b.h);
+                return
