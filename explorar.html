@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🔧 Explorar — Buscar repuestos</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #05051a; overflow: hidden; font-family: Arial; }
+        canvas { display: block; background: #05051a; }
+        .ui { position: absolute; top: 10px; left: 15px; color: white; z-index: 10; font-size: 18px; }
+        .volver { position: absolute; top: 10px; right: 15px; color: #aaa; text-decoration: none; font-size: 16px; z-index: 20; }
+        .instruccion { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); color: #888; font-size: 14px; z-index: 10; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="volver">← Volver</a>
+    <div class="ui">
+        🔧 Partes encontradas: <span id="partes">0</span>/5
+        <br>
+        📦 Inventario: <span id="inventario">Vacío</span>
+    </div>
+    <div class="instruccion">⬅️➡️⬆️⬇️ Flechas para moverte | ¡Encontrá las 5 partes perdidas!</div>
+    <canvas id="mapa"></canvas>
+
+    <script>
+        const canvas = document.getElementById('mapa');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const jugador = { x: 100, y: canvas.height/2, tam: 40, vel: 4 };
+        const partesNecesarias = ['🔩 Motor', '🔋 Energía', '📡 Antena', '🛞 Propulsor', '💡 Navegación'];
+        let partesEncontradas = [];
+        let partes = [];
+        let obstaculos = [];
+        let teclas = {};
+        let caminos = [];
+
+        // Generar terreno y caminos
+        for(let i=0; i<15; i++) {
+            obstaculos.push({
+                x: Math.random()*(canvas.width - 100) + 50,
+                y: Math.random()*(canvas.height - 100) + 50,
+                w: 60 + Math.random()*80,
+                h: 50 + Math.random()*60,
+                tipo: Math.random() > 0.5 ? '🪨' : '🌑'
+            });
+        }
+
+        // Colocar partes de la nave en lugares aleatorios
+        partesNecesarias.forEach((nombre, i) => {
+            let posValida = false;
+            let intentos = 0;
+            let px, py;
+            while(!posValida && intentos < 100) {
+                px = Math.random()*(canvas.width - 150) + 75;
+                py = Math.random()*(canvas.height - 150) + 75;
+                posValida = true;
+                for(let o of obstaculos) {
+                    if(px < o.x + o.w + 30 && px + 30 > o.x - 30 && py < o.y + o.h + 30 && py + 30 > o.y - 30) {
+                        posValida = false;
+                        break;
+                    }
+                }
+                intentos++;
+            }
+            partes.push({ x: px, y: py, nombre, recolectada: false });
+        });
+
+        document.addEventListener('keydown', e => teclas[e.key] = true);
+        document.addEventListener('keyup', e => teclas[e.key] = false);
+
+        function loop() {
+            ctx.fillStyle = '#05051a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Estrellas de fondo
+            for(let i=0; i<100; i++) {
+                ctx.fillStyle = 'rgba(255,255,255,0.2)';
+                ctx.beginPath();
+                ctx.arc((i*73) % canvas.width, (i*97) % canvas.height, 1, 0, Math.PI*2);
+                ctx.fill();
+            }
+
+            // Dibujar obstáculos
+            obstaculos.forEach(o => {
+                ctx.font = '40px Arial';
+                ctx.fillText(o.tipo, o.x, o.y + 35);
+            });
+
+            // Dibujar partes de la nave
+            partes.forEach(p => {
+                if(!p.recolectada) {
+                    ctx.font = '28px Arial';
+                    ctx.fillText('📦', p.x, p.y + 25);
+                    // Brillo alrededor
+                    ctx.beginPath();
+                    ctx.arc(p.x + 14, p.y + 14, 20, 0, Math.PI*2);
+                    ctx.fillStyle = 'rgba(255,235,59,0.1)';
+                    ctx.fill();
+                }
+            });
+
+            // 🛸 Mover jugador
+            let movX = 0, mo
