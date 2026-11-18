@@ -7,3 +7,114 @@
         body {
             background: linear-gradient(180deg, #0a0a2e 0%, #1a1a4e 100%);
             min-height: 10
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🗺️ Mapa Galáctico</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(180deg, #0a0a2e 0%, #1a1a4e 100%);
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        h1 { color: #ffeb3b; margin-bottom: 40px; text-shadow: 0 0 15px #ffeb3b; }
+        .volver {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #aaa;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .galaxia {
+            position: relative;
+            width: 700px;
+            height: 500px;
+            margin: 0 auto;
+            background: radial-gradient(circle at center, #1a1a4e 0%, #0a0a2e 70%);
+            border-radius: 50%;
+            border: 3px solid #444;
+            box-shadow: inset 0 0 50px rgba(100,150,255,0.1);
+        }
+        .nivel {
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(145deg, #2a2a5a, #1a1a3a);
+            border: 3px solid #555;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .nivel:hover { transform: scale(1.1); border-color: #ffeb3b; }
+        .nivel.completado {
+            background: linear-gradient(145deg, #2a5a2a, #1a3a1a);
+            border-color: #4aff4a;
+            box-shadow: 0 0 15px rgba(0,255,0,0.3);
+        }
+        .bandera { font-size: 22px; display: none; }
+        .nivel.completado .bandera { display: block; }
+        .numero { font-size: 18px; font-weight: bold; }
+        .etiqueta { font-size: 10px; margin-top: 3px; }
+        .conexion {
+            position: absolute;
+            background: #333;
+            height: 3px;
+            transform-origin: left center;
+        }
+        .conexion.completada { background: #4aff4a; box-shadow: 0 0 5px #4aff4a; }
+        .estrellas {
+            position: absolute; width: 100%; height: 100%; border-radius: 50%; overflow: hidden;
+        }
+        .estrella {
+            position: absolute; width: 2px; height: 2px; background: white; border-radius: 50%;
+        }
+        .progreso {
+            margin-top: 30px; font-size: 20px;
+            color: #ffeb3b;
+        }
+        button {
+            margin-top: 30px; padding: 10px 25px;
+            background: linear-gradient(145deg, #5a5a5a, #3a3a3a);
+            border: 2px solid #777;
+            color: white; border-radius: 8px;
+            cursor: pointer; font-size: 15px;
+        }
+        button:hover { background: linear-gradient(145deg, #6a6a6a, #4a4a4a); }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="volver">← Volver</a>
+    <h1>🌌 Mapa Galáctico — Misiones</h1>
+
+    <div class="galaxia" id="mapa">
+        <div class="estrellas" id="fondo-estrellas"></div>
+        <!-- Se generan con JavaScript -->
+    </div>
+
+    <div class="progreso" id="progreso">Misiones completadas: 0/5</div>
+    <br>
+    <button onclick="reiniciarTodo()">🔄 Reiniciar progreso</button>
+
+    <script>
+        const misiones = [
+            { id: 1, nombre: 'Defensor', x: 120, y: 250, enlace: 'juego.html' },
+            { id: 2, nombre: 'Lunar', x: 260, y: 120, enlace: 'mision2.html' },
+            { id: 3, nombre: 'Explorar', x: 400, y: 150, enlace: 'explorar.html' },
+            { id: 4, nombre: 'Mapa', x: 550, y: 250, enlace: 'mapa.html' },
+            { id: 5, nombre: 'Rescate', x: 330, y: 400, enlace: 'jefe.html' }
+        ];
+        const conexiones = [[0,1], [1,2], [2,3], [1,4], [2,4]];
+        let completadas = JSON.parse(localStorage.getItem('misionesCompletadas') || '[]');
+
+        function dibujarMapa() {
+            const mapa = document.getElementById('mapa');
+            mapa.innerHTML = '<div 
