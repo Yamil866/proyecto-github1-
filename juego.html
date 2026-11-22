@@ -15,13 +15,11 @@
 </head>
 <body>
     <a href="index.html" class="volver">← Volver</a>
-
     <div class="ui">
         <span class="corazon" id="vidas">❤️❤️❤️</span>
         <span class="puntos">Puntos: <span id="puntaje">0</span></span>
         <div class="mejorada" id="estado-nave">Nave: Estándar</div>
     </div>
-
     <canvas id="juego"></canvas>
 
     <script>
@@ -30,57 +28,47 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        let nave = { x: canvas.width/2 - 30, y: canvas.height - 100, w: 60, h: 40, velocidad: 6 };
+        let nave = { x: canvas.width/2 - 30, y: canvas.height - 100, w: 60, h: 40, vel: 6 };
         let balas = [], rocas = [], comida = [], meteoros = [];
         let puntaje = 0, vidas = 3, naveMejorada = false;
         let teclas = {}, ultimoDisparo = 0, estrellas = [];
 
+        // 🍎 Comida/frutas para el ovni
+        const frutas = ['🍎', '🍊', '🍇', '🍓', '🥕', '🌽', '🍌'];
+
         // ⭐ Fondo de estrellas
-        for(let i=0; i<250; i++) {
+        for(let i = 0; i < 250; i++) {
             estrellas.push({
-                x: Math.random()*canvas.width,
-                y: Math.random()*canvas.height,
-                tam: Math.random()*2 + 0.3,
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                tam: Math.random() * 2 + 0.3,
                 brillo: Math.random()
             });
         }
 
-        // Controles
         document.addEventListener('keydown', e => teclas[e.key] = true);
         document.addEventListener('keyup', e => teclas[e.key] = false);
 
         // Recuperar nave mejorada
         if(localStorage.getItem('naveMejorada') === 'si') {
             naveMejorada = true;
-            nave.velocidad = 9;
+            nave.vel = 9;
             document.getElementById('estado-nave').textContent = 'Nave: ⚡MEJORADA⚡';
         }
 
-        function loop() {
-            // 🌌 Dibujar fondo
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0,0,canvas.width,canvas.height);
-            estrellas.forEach(s => {
-                ctx.fillStyle = rgba(255,255,255,${0.2 + s.brillo*0.8});
-                ctx.beginPath();
-                ctx.arc(s.x, s.y, s.tam, 0, Math.PI*2);
-                ctx.fill();
-                s.brillo += (Math.random()-0.5)*0.02;
-                s.brillo = Math.max(0.1, Math.min(1, s.brillo));
-            });
-
+        function actualizar() {
             // 🛸 Mover nave
-            if(teclas['ArrowLeft'] && nave.x > 0) nave.x -= nave.velocidad;
-            if(teclas['ArrowRight'] && nave.x < canvas.width - nave.w) nave.x += nave.velocidad;
-            if(teclas['ArrowUp'] && nave.y > canvas.height/2) nave.y -= nave.velocidad;
-            if(teclas['ArrowDown'] && nave.y < canvas.height - nave.h - 20) nave.y += nave.velocidad;
+            if(teclas['ArrowLeft'] && nave.x > 0) nave.x -= nave.vel;
+            if(teclas['ArrowRight'] && nave.x < canvas.width - nave.w) nave.x += nave.vel;
+            if(teclas['ArrowUp'] && nave.y > canvas.height/2) nave.y -= nave.vel;
+            if(teclas['ArrowDown'] && nave.y < canvas.height - nave.h - 20) nave.y += nave.vel;
 
             // 🔫 Disparo automático
             if(Date.now() - ultimoDisparo > (naveMejorada ? 250 : 400)) {
-                balas.push({x: nave.x + nave.w/2 - 3, y: nave.y, w: 6, h: 15});
+                balas.push({ x: nave.x + nave.w/2 - 3, y: nave.y, w: 6, h: 15 });
                 if(naveMejorada) {
-                    balas.push({x: nave.x + 10, y: nave.y + 10, w: 4, h: 12});
-                    balas.push({x: nave.x + nave.w - 14, y: nave.y + 10, w: 4, h: 12});
+                    balas.push({ x: nave.x + 10, y: nave.y + 10, w: 4, h: 12 });
+                    balas.push({ x: nave.x + nave.w - 14, y: nave.y + 10, w: 4, h: 12 });
                 }
                 ultimoDisparo = Date.now();
             }
@@ -88,12 +76,157 @@
             // Mover balas
             balas = balas.filter(b => {
                 b.y -= 8;
-                ctx.fillStyle = naveMejorada ? '#00ff88' : '#ffeb3b';
-                ctx.fillRect(b.x, b.y, b.w, b.h);
                 return b.y > -20;
             });
 
-            // 🪨 Generar rocas deformes
+            // 🪨 Generar rocas
             if(Math.random() < 0.025) {
                 rocas.push({
-                    x: Math.random()*(canvas.width-70),
+                    x: Math.random() * (canvas.width - 70),
+                    y: -50,
+                    w: 40 + Math.random() * 25,
+                    h: 30 + Math.random() * 20,
+                    vel: 1.5 + Math.random() * 2
+                });
+            }
+
+            // 🍎 Generar comida/frutas
+            if(Math.random() < 0.005) {
+                comida.push({
+                    x: Math.random() * (canvas.width - 40),
+                    y: -30,
+                    tipo: frutas[Math.floor(Math.random() * frutas.length)],
+                    vel: 2
+                });
+            }
+
+            // Mover rocas
+            rocas = rocas.filter(r => {
+                r.y += r.vel;
+                // Colisión con nave
+                if(r.x < nave.x + nave.w && r.x + r.w > nave.x &&
+                   r.y < nave.y + nave.h && r.y + r.h > nave.y) {
+                    vidas--;
+                    actualizarVidas();
+                    return false;
+                }
+                return r.y < canvas.height + 50;
+            });
+
+            // Mover comida
+            comida = comida.filter(c => {
+                c.y += c.vel;
+                // Recolectar comida
+                if(c.x < nave.x + nave.w && c.x + 25 > nave.x &&
+                   c.y < nave.y + nave.h && c.y + 25 > nave.y) {
+                    puntaje += 5;
+                    document.getElementById('puntaje').textContent = puntaje;
+                    // Mejorar nave al llegar a 100 puntos
+                    if(puntaje >= 100 && !naveMejorada) {
+                        naveMejorada = true;
+                        nave.vel = 9;
+                        localStorage.setItem('naveMejorada', 'si');
+                        document.getElementById('estado-nave').textContent = 'Nave: ⚡MEJORADA⚡';
+                    }
+                    return false;
+                }
+                return c.y < canvas.height + 50;
+            });
+
+            // Colisión balas con rocas
+            balas.forEach((b, bi) => {
+                rocas.forEach((r, ri) => {
+                    if(b.x < r.x + r.w && b.x + b.w > r.x &&
+                       b.y < r.y + r.h && b.y + b.h > r.y) {
+                        balas.splice(bi, 1);
+                        rocas.splice(ri, 1);
+                        puntaje += 10;
+                        document.getElementById('puntaje').textContent = puntaje;
+                        // Mejorar nave al llegar a 100 puntos
+                        if(puntaje >= 100 && !naveMejorada) {
+                            naveMejorada = true;
+                            nave.vel = 9;
+                            localStorage.setItem('naveMejorada', 'si');
+                            document.getElementById('estado-nave').textContent = 'Nave: ⚡MEJORADA⚡';
+                        }
+                    }
+                });
+            });
+
+            // Game Over
+            if(vidas <= 0) {
+                alert('💥 ¡JUEGO TERMINADO! Puntos: ' + puntaje);
+                vidas = 3;
+                puntaje = 0;
+                rocas = [];
+                comida = [];
+                balas = [];
+                nave.x = canvas.width/2 - 30;
+                nave.y = canvas.height - 100;
+                document.getElementById('puntaje').textContent = '0';
+                actualizarVidas();
+            }
+        }
+
+        function actualizarVidas() {
+            let html = '';
+            for(let i = 0; i < vidas; i++) html += '❤️';
+            document.getElementById('vidas').textContent = html || '💔';
+        }
+
+        function dibujar() {
+            // 🌌 Fondo
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // ⭐ Estrellas parpadeantes
+            estrellas.forEach(s => {
+                ctx.fillStyle = `rgba(255, 255, 255, ${0.2 + s.brillo * 0.8})`;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.tam, 0, Math.PI * 2);
+                ctx.fill();
+                s.brillo += (Math.random() - 0.5) * 0.02;
+                s.brillo = Math.max(0.1, Math.min(1, s.brillo));
+            });
+
+            // 🪨 Rocas
+            rocas.forEach(r => {
+                ctx.fillStyle = '#666';
+                ctx.beginPath();
+                ctx.ellipse(r.x + r.w/2, r.y + r.h/2, r.w/2, r.h/2, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#888';
+                ctx.beginPath();
+                ctx.arc(r.x + r.w * 0.3, r.y + r.h * 0.4, 5, 0, Math.PI * 2);
+                ctx.arc(r.x + r.w * 0.7, r.y + r.h * 0.6, 4, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // 🍎 Comida
+            ctx.font = '24px Arial';
+            comida.forEach(c => ctx.fillText(c.tipo, c.x, c.y + 22));
+
+            // 🛸 Ovni/Nave
+            ctx.fillStyle = naveMejorada ? '#00ff88' : '#c0c0c0';
+            ctx.beginPath();
+            ctx.ellipse(nave.x + 30, nave.y + 20, 30, 15, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffff00';
+            ctx.fillRect(nave.x + 12, nave.y + 24, 6, 6);
+            ctx.fillRect(nave.x + 27, nave.y + 28, 6, 6);
+            ctx.fillRect(nave.x + 42, nave.y + 24, 6, 6);
+
+            // 🔫 Balas
+            ctx.fillStyle = naveMejorada ? '#00ff88' : '#ffeb3b';
+            balas.forEach(b => ctx.fillRect(b.x, b.y, b.w, b.h));
+        }
+
+        function loop() {
+            actualizar();
+            dibujar();
+            requestAnimationFrame(loop);
+        }
+        loop();
+    </script>
+</body>
+</html>
