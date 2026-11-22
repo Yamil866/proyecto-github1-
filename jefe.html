@@ -21,7 +21,7 @@
 </head>
 <body>
     <a href="index.html" class="volver">← Volver</a>
-    <div class="marvin">👽 ¡Ayúdame, Yamil! ¡No dejes que el Jefe me lleve! 🔗</div>
+    <div class="marvin">👽 ¡Ayúdame !derrota al villano ! 🔗</div>
     <div class="ui">
         👹 JEFE MARCIANO — Nivel Final<br>
         <div class="barra-vida"><div class="vida-jefe" id="barra-jefe"></div></div>
@@ -44,16 +44,19 @@
             w: 120, h: 100, vida: 100, maxVida: 100, 
             fase: 1, direccion: 1, contador: 0
         };
-        let balas = [], balasJefe = [], obstaculos = [], comida = [];
+        let balas = [], balasJefe = [], comida = [];
         let puntaje = 0, vidas = 3, teclas = {}, ultimoDisparo = 0;
         let estrellas = [], jefeDerrotado = false;
 
+        // 🍎 Comida/frutas
+        const frutas = ['🍎', '🍊', '🍇', '🍓', '🥕', '🌽', '🍌'];
+
         // ⭐ Estrellas
-        for(let i=0; i<200; i++) {
+        for(let i = 0; i < 200; i++) {
             estrellas.push({
-                x: Math.random()*canvas.width,
-                y: Math.random()*canvas.height,
-                tam: Math.random()*1.5 + 0.3,
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                tam: Math.random() * 1.5 + 0.3,
                 parpadeo: Math.random()
             });
         }
@@ -61,17 +64,140 @@
         document.addEventListener('keydown', e => teclas[e.key] = true);
         document.addEventListener('keyup', e => teclas[e.key] = false);
 
-        function loop() {
+        function actualizarUI() {
+            const porc = Math.max(0, Math.round(jefe.vida / jefe.maxVida * 100));
+            document.getElementById('barra-jefe').style.width = porc + '%';
+            document.getElementById('porcentaje').textContent = porc + '%';
+            document.getElementById('vidas').textContent = '❤️'.repeat(Math.max(0, vidas));
+            document.getElementById('puntaje').textContent = puntaje;
+        }
+
+        function actualizar() {
+            jefe.contador++;
+
+            // 🛸 Mover nave
+            if(teclas['ArrowUp'] && nave.y > 20) nave.y -= nave.vel;
+            if(teclas['ArrowDown'] && nave.y < canvas.height - nave.h - 20) nave.y += nave.vel;
+            if(teclas['ArrowLeft'] && nave.x > 20) nave.x -= nave.vel;
+            if(teclas['ArrowRight'] && nave.x < canvas.width - nave.w - 20) nave.x += nave.vel;
+
+            // 🔫 Disparo del jugador
+            if(teclas[' '] && Date.now() - ultimoDisparo > 300) {
+                balas.push({ x: nave.x + nave.w, y: nave.y + nave.h/2 - 3, w: 12, h: 6 });
+                ultimoDisparo = Date.now();
+            }
+
+            // Mover balas del jugador
+            balas = balas.filter(b => {
+                b.x += 12;
+                // Golpe al jefe
+                if(b.x > jefe.x && b.x < jefe.x + jefe.w &&
+                   b.y > jefe.y && b.y < jefe.y + jefe.h) {
+                    jefe.vida -= 3;
+                    puntaje += 5;
+                    return false;
+                }
+                return b.x < canvas.width;
+            });
+
+            // 👹 Jefe se mueve
+            jefe.y += jefe.direccion * 2;
+            if(jefe.y < 50 || jefe.y > canvas.height - jefe.h - 50) jefe.direccion *= -1;
+
+            // 💥 Disparos del jefe según fase
+            const intervaloDisparo = jefe.fase === 1 ? 1500 : jefe.fase === 2 ? 1000 : 600;
+            if(jefe.contador % Math.floor(intervaloDisparo / 16) === 0) {
+                balasJefe.push({
+                    x: jefe.x,
+                    y: jefe.y + jefe.h/2,
+                    w: -10,
+                    h: 6,
+                    velX: -5 - jefe.fase,
+                    velY: (Math.random() - 0.5) * 2
+                });
+                // Fase 2 y 3: disparo doble o triple
+                if(jefe.fase >= 2) {
+                    balasJefe.push({
+                        x: jefe.x,
+                        y: jefe.y + jefe.h/2 - 25,
+                        w: -8,
+                        h: 5,
+                        velX: -5 - jefe.fase,
+                        velY: -1
+                    });
+                    balasJefe.push({
+                        x: jefe.x,
+                        y: jefe.y + jefe.h/2 + 25,
+                        w: -8,
+                        h: 5,
+                        velX: -5 - jefe.fase,
+                        velY: 1
+                    });
+                }
+            }
+
+            // Mover balas del jefe
+            balasJefe = balasJefe.filter(b => {
+                b.x += b.velX;
+                b.y += b.velY;
+                // Golpe al jugador
+                if(b.x < nave.x + nave.w && b.x + 10 > nave.x &&
+                   b.y < nave.y + nave.h && b.y + b.h > nave.y) {
+                    vidas--;
+                    return false;
+                }
+                return b.x > -20;
+            });
+
+            // 🍎 Comida
+            if(Math.random() < 0.003) {
+                comida.push({
+                    x: Math.random() * (canvas.width - 300) + 50,
+                    y: -30,
+                    tipo: frutas[Math.floor(Math.random() * frutas.length)],
+                    vel: 1.5
+                });
+            }
+            comida = comida.filter(c => {
+                c.y += c.vel;
+                // Recolectar comida
+                if(c.x < nave.x + nave.w && c.x + 25 > nave.x &&
+                   c.y < nave.y + nave.h && c.y + 25 > nave.y) {
+                    puntaje += 10;
+                    return false;
+                }
+                return c.y < canvas.height + 50;
+            });
+
+            // ⚠️ Fases del jefe
+            if(jefe.vida <= 0) {
+                jefeDerrotado = true;
+                localStorage.setItem('jefeDerrotado', 'si');
+                const completadas = JSON.parse(localStorage.getItem('misionesCompletadas') || '[]');
+                if(!completadas.includes(5)) {
+                    completadas.push(5);
+                    localStorage.setItem('misionesCompletadas', JSON.stringify(completadas));
+                }
+            } else if(jefe.vida <= 30 && jefe.fase < 3) {
+                jefe.fase = 3;
+            } else if(jefe.vida <= 60 && jefe.fase < 2) {
+                jefe.fase = 2;
+            }
+
+            actualizarUI();
+        }
+
+        function dibujar() {
             ctx.fillStyle = '#000';
-            ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Estrellas parpadeando
             estrellas.forEach(s => {
                 s.parpadeo += 0.02;
-                const alfa = 0.3 + Math.abs(Math.sin(s.parpadeo))*0.7;
-                ctx.fillStyle = rgba(255,255,255,${alfa});
+                const alfa = 0.3 + Math.abs(Math.sin(s.parpadeo)) * 0.7;
+                ctx.fillStyle = `rgba(255, 255, 255, ${alfa})`;
                 ctx.beginPath();
-                ctx.arc(s.x, s.y, s.tam, 0, Math.PI*2);
+                ctx.arc(s.x, s.y, s.tam, 0, Math.PI * 2);
                 ctx.fill();
             });
 
@@ -83,78 +209,70 @@
                 ctx.fillText('🎉 ¡VICTORIA! 🎉', canvas.width/2, canvas.height/2 - 40);
                 ctx.font = '24px Arial';
                 ctx.fillStyle = '#fff';
-                ctx.fillText('¡Rescataste a Marvin y derrotaste al Jefe!', canvas.width/2, canvas.height/2 + 10);
-                ctx.fillText(Puntaje final: ${puntaje}, canvas.width/2, canvas.height/2 + 50);
+                ctx.fillText(`Puntaje final: ${puntaje}`, canvas.width/2, canvas.height/2 + 10);
+                ctx.fillText('¡Rescataste a Marvin y derrotaste al Jefe!', canvas.width/2, canvas.height/2 + 50);
                 ctx.fillText('Marvin dice: ¡Gracias, amigo! 👽🤝🛸', canvas.width/2, canvas.height/2 + 90);
                 return;
             }
 
-            // 🛸 Mover nave
-            if(teclas['ArrowUp'] && nave.y > 20) nave.y -= nave.vel;
-            if(teclas['ArrowDown'] && nave.y < canvas.height - nave.h - 20) nave.y += nave.vel;
-          }
-                    return true;
-                });
-
-                // ⚠️ Fases del jefe
-                if(jefe.vida <= 0) {
-                    jefeDerrotado = true;
-                    localStorage.setItem('jefeDerrotado', 'si');
-                    if(window.marcarCompletada) window.marcarCompletada(4);
-                } else if(jefe.vida <= 30 && jefe.fase < 3) {
-                    jefe.fase = 3;
-                } else if(jefe.vida <= 60 && jefe.fase < 2) {
-                    jefe.fase = 2;
-                }
-
-                // 👹 Dibujar jefe según fase
-                ctx.font = '80px Arial';
-                const jefeEmoji = jefe.fase === 1 ? '👽' : jefe.fase === 2 ? '👾' : '👹';
-                ctx.fillText(jefeEmoji, jefe.x, jefe.y + 80);
-                
-                // Fuego o aura según fase
-                if(jefe.fase >= 2) {
-                    ctx.fillStyle = 'rgba(255,100,0,0.2)';
-                    ctx.beginPath();
-                    ctx.arc(jefe.x + jefe.w/2, jefe.y + jefe.h/2, 80 + Math.sin(jefe.contador*0.1)*5, 0, Math.PI*2);
-                    ctx.fill();
-                }
-
-                // 🛸 Dibujar nave
-                ctx.font = '40px Arial';
-                ctx.fillText('🛸', nave.x, nave.y + 35);
-
-                // 💀 Game Over
-                if(vidas <= 0) {
-                    ctx.fillStyle = 'rgba(0,0,0,0.7)';
-                    ctx.fillRect(0,0,canvas.width,canvas.height);
-                    ctx.fillStyle = '#ff4444';
-                    ctx.font = 'bold 40px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('💀 DERROTADO', canvas.width/2, canvas.height/2 - 30);
-                    ctx.fillStyle = '#fff';
-                    ctx.font = '22px Arial';
-                    ctx.fillText(Puntos: ${puntaje}, canvas.width/2, canvas.height/2 + 10);
-                    ctx.fillText('Recargá la página para intentarlo de nuevo', canvas.width/2, canvas.height/2 + 50);
-                    return;
-                }
-
-                requestAnimationFrame(loop);
+            // 👹 Dibujar jefe según fase
+            ctx.font = '80px Arial';
+            const jefeEmoji = jefe.fase === 1 ? '👽' : jefe.fase === 2 ? '👾' : '👹';
+            ctx.fillText(jefeEmoji, jefe.x, jefe.y + 80);
+            
+            // Fuego o aura según fase
+            if(jefe.fase >= 2) {
+                ctx.fillStyle = 'rgba(255,100,0,0.2)';
+                ctx.beginPath();
+                ctx.arc(jefe.x + jefe.w/2, jefe.y + jefe.h/2, 80 + Math.sin(jefe.contador * 0.1) * 5, 0, Math.PI * 2);
+                ctx.fill();
             }
 
-            function actualizarUI() {
-                const porc = Math.max(0, Math.round(jefe.vida / jefe.maxVida * 100));
-                document.getElementById('barra-jefe').style.width = porc + '%';
-                document.getElementById('porcentaje').textContent = porc + '%';
-                document.getElementById('vidas').textContent = '❤️'.repeat(Math.max(0, vidas));
-                document.getElementById('puntaje').textContent = puntaje;
-            }
+            // 🛸 Dibujar nave
+            ctx.font = '40px Arial';
+            ctx.fillText('🛸', nave.x, nave.y + 35);
 
-            loop();
-            window.addEventListener('resize', () => {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            });
-        </script>
-    </body>
+            // 🔫 Balas del jugador
+            ctx.fillStyle = '#ffeb3b';
+            balas.forEach(b => ctx.fillRect(b.x, b.y, b.w, b.h));
+
+            // 💀 Balas del jefe
+            ctx.fillStyle = '#ff4444';
+            balasJefe.forEach(b => ctx.fillRect(b.x, b.y, Math.abs(b.w), b.h));
+
+            // 🍎 Comida
+            ctx.font = '24px Arial';
+            comida.forEach(c => ctx.fillText(c.tipo, c.x, c.y + 22));
+
+            // 💀 Game Over
+            if(vidas <= 0) {
+                ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#ff4444';
+                ctx.font = 'bold 40px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('💀 DERROTADO', canvas.width/2, canvas.height/2 - 30);
+                ctx.fillStyle = '#fff';
+                ctx.font = '22px Arial';
+                ctx.fillText(`Puntos: ${puntaje}`, canvas.width/2, canvas.height/2 + 10);
+                ctx.fillText('Recargá la página para intentarlo de nuevo', canvas.width/2, canvas.height/2 + 50);
+                return;
+            }
+        }
+
+        function loop() {
+            if(!jefeDerrotado && vidas > 0) {
+                actualizar();
+                dibujar();
+            }
+            requestAnimationFrame(loop);
+        }
+        loop();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
 </html>
