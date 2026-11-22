@@ -1,3 +1,4 @@
+```
 <!DOCTYPE html>
 <html>
 <head>
@@ -27,64 +28,51 @@
         let estrellas = [], montañaArriba = [], montañaAbajo = [];
 
         // ⭐ Estrellas de fondo
-        for(let i=0; i<200; i++) {
+        for(let i = 0; i < 200; i++) {
             estrellas.push({
-                x: Math.random()*canvas.width,
-                y: Math.random()*canvas.height,
-                tam: Math.random()*1.5 + 0.3
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                tam: Math.random() * 1.5 + 0.3
             });
         }
 
         // 🌑 Montañas arriba
-        for(let x=0; x<canvas.width+50; x+=40) {
-            montañaArriba.push({x, h: 40 + Math.random()*80});
+        for(let x = 0; x < canvas.width + 50; x += 40) {
+            montañaArriba.push({ x, h: 40 + Math.random() * 80 });
         }
         // 🌑 Montañas abajo
-        for(let x=0; x<canvas.width+50; x+=40) {
-            montañaAbajo.push({x, h: 40 + Math.random()*80});
+        for(let x = 0; x < canvas.width + 50; x += 40) {
+            montañaAbajo.push({ x, h: 40 + Math.random() * 80 });
         }
+
+        // 🍎 Comida/frutas para recolectar
+        const frutas = ['🍎', '🍊', '🍇', '🍓', '🥕', '🌽', '🍌'];
+        setInterval(() => {
+            if(Math.random() > 0.7) {
+                comida.push({
+                    x: canvas.width + 30,
+                    y: montañaArriba[0].h + 30 + Math.random() * (canvas.height - montañaArriba[0].h - montañaAbajo[0].h - 60),
+                    tipo: frutas[Math.floor(Math.random() * frutas.length)],
+                    vel: 1.5
+                });
+            }
+        }, 1500);
+
+        // 👾 Generar aliens
+        setInterval(() => {
+            aliens.push({
+                x: canvas.width + 30,
+                y: montañaArriba[0].h + 30 + Math.random() * (canvas.height - montañaArriba[0].h - montañaAbajo[0].h - 60),
+                w: 35,
+                h: 25,
+                vel: 1 + Math.random()
+            });
+        }, 1200);
 
         document.addEventListener('keydown', e => teclas[e.key] = true);
         document.addEventListener('keyup', e => teclas[e.key] = false);
 
-        function loop() {
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0,0,canvas.width,canvas.height);
-
-            // Estrellas
-            estrellas.forEach(s => {
-                ctx.fillStyle = '#fff';
-                ctx.beginPath();
-                ctx.arc(s.x, s.y, s.tam, 0, Math.PI*2);
-                ctx.fill();
-            });
-
-            // 🌑 Montañas lunares ARRIBA
-            ctx.fillStyle = '#2a2a2a';
-            ctx.beginPath();
-            ctx.moveTo(0, 0);
-            montañaArriba.forEach(m => {
-                ctx.lineTo(m.x, m.h);
-                m.x -= 0.3;
-                if(m.x < -40) { m.x = canvas.width + 40; m.h = 40 + Math.random()*80; }
-            });
-            ctx.lineTo(canvas.width, 0);
-            ctx.closePath();
-            ctx.fill();
-
-            // 🌑 Montañas lunares ABAJO
-            ctx.fillStyle = '#2a2a2a';
-            ctx.beginPath();
-            ctx.moveTo(0, canvas.height);
-            montañaAbajo.forEach(m => {
-                ctx.lineTo(m.x, canvas.height - m.h);
-                m.x -= 0.3;
-                if(m.x < -40) { m.x = canvas.width + 40; m.h = 40 + Math.random()*80; }
-            });
-            ctx.lineTo(canvas.width, canvas.height);
-            ctx.closePath();
-            ctx.fill();
-
+        function actualizar() {
             // 🛸 Mover nave
             if(teclas['ArrowUp'] && nave.y > montañaArriba[0].h + 20) nave.y -= nave.vel;
             if(teclas['ArrowDown'] && nave.y < canvas.height - montañaAbajo[0].h - nave.h - 10) nave.y += nave.vel;
@@ -93,74 +81,75 @@
 
             // 🔫 Disparo
             if(teclas[' '] && Date.now() - ultimoDisparo > 350) {
-                balas.push({x: nave.x + nave.w, y: nave.y + nave.h/2 - 3, w: 12, h: 6});
+                balas.push({ x: nave.x + nave.w, y: nave.y + nave.h/2 - 3, w: 12, h: 6 });
                 ultimoDisparo = Date.now();
             }
 
             // Mover balas
             balas = balas.filter(b => {
                 b.x += 10;
-                ctx.fillStyle = '#ffeb3b';
-                ctx.fillRect(b.x, b.y, b.w, b.h);
                 return b.x < canvas.width;
-                <!DOCTYPE html>
-<html>
-<head>
-    <title>🌙 Misión 2 — Invasión Lunar</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #000; overflow: hidden; font-family: Arial; }
-        canvas { display: block; background: #000; }
-        .ui { position: absolute; top: 10px; left: 15px; color: white; z-index: 10; font-size: 18px; }
-        .volver { position: absolute; top: 10px; right: 15px; color: #aaa; text-decoration: none; font-size: 16px; z-index: 20; }
-    </style>
-</head>
-<body>
-    <a href="index.html" class="volver">← Volver</a>
-    <div class="ui">Puntos: <span id="puntaje">0</span> &nbsp; ❤️ <span id="vidas">3</span></div>
-    <canvas id="juego"></canvas>
+            });
 
-    <script>
-        const canvas = document.getElementById('juego');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+            // Mover aliens
+            aliens = aliens.filter(a => {
+                a.x -= a.vel;
+                // Colisión con nave
+                if(a.x < nave.x + nave.w && a.x + a.w > nave.x &&
+                   a.y < nave.y + nave.h && a.y + a.h > nave.y) {
+                    vidas--;
+                    document.getElementById('vidas').textContent = vidas;
+                    return false;
+                }
+                return a.x > -50;
+            });
 
-        let nave = { x: 100, y: canvas.height/2, w: 50, h: 35, vel: 5 };
-        let balas = [], aliens = [], comida = [];
-        let puntaje = 0, vidas = 3, teclas = {}, ultimoDisparo = 0;
-        let estrellas = [], montañaArriba = [], montañaAbajo = [];
+            // Mover comida
+            comida = comida.filter(c => {
+                c.x -= c.vel;
+                // Recolectar comida
+                if(c.x < nave.x + nave.w && c.x + 25 > nave.x &&
+                   c.y < nave.y + nave.h && c.y + 25 > nave.y) {
+                    puntaje += 5;
+                    document.getElementById('puntaje').textContent = puntaje;
+                    return false;
+                }
+                return c.x > -50;
+            });
 
-        // ⭐ Estrellas de fondo
-        for(let i=0; i<200; i++) {
-            estrellas.push({
-                x: Math.random()*canvas.width,
-                y: Math.random()*canvas.height,
-                tam: Math.random()*1.5 + 0.3
+            // Colisión balas con aliens
+            balas.forEach((b, bi) => {
+                aliens.forEach((a, ai) => {
+                    if(b.x < a.x + a.w && b.x + b.w > a.x &&
+                       b.y < a.y + a.h && b.y + b.h > a.y) {
+                        balas.splice(bi, 1);
+                        aliens.splice(ai, 1);
+                        puntaje += 10;
+                        document.getElementById('puntaje').textContent = puntaje;
+                    }
+                });
+            });
+
+            // Mover montañas
+            montañaArriba.forEach(m => {
+                m.x -= 0.3;
+                if(m.x < -40) { m.x = canvas.width + 40; m.h = 40 + Math.random() * 80; }
+            });
+            montañaAbajo.forEach(m => {
+                m.x -= 0.3;
+                if(m.x < -40) { m.x = canvas.width + 40; m.h = 40 + Math.random() * 80; }
             });
         }
 
-        // 🌑 Montañas arriba
-        for(let x=0; x<canvas.width+50; x+=40) {
-            montañaArriba.push({x, h: 40 + Math.random()*80});
-        }
-        // 🌑 Montañas abajo
-        for(let x=0; x<canvas.width+50; x+=40) {
-            montañaAbajo.push({x, h: 40 + Math.random()*80});
-        }
-
-        document.addEventListener('keydown', e => teclas[e.key] = true);
-        document.addEventListener('keyup', e => teclas[e.key] = false);
-
-        function loop() {
+        function dibujar() {
             ctx.fillStyle = '#000';
-            ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Estrellas
             estrellas.forEach(s => {
                 ctx.fillStyle = '#fff';
                 ctx.beginPath();
-                ctx.arc(s.x, s.y, s.tam, 0, Math.PI*2);
+                ctx.arc(s.x, s.y, s.tam, 0, Math.PI * 2);
                 ctx.fill();
             });
 
@@ -168,11 +157,7 @@
             ctx.fillStyle = '#2a2a2a';
             ctx.beginPath();
             ctx.moveTo(0, 0);
-            montañaArriba.forEach(m => {
-                ctx.lineTo(m.x, m.h);
-                m.x -= 0.3;
-                if(m.x < -40) { m.x = canvas.width + 40; m.h = 40 + Math.random()*80; }
-            });
+            montañaArriba.forEach(m => ctx.lineTo(m.x, m.h));
             ctx.lineTo(canvas.width, 0);
             ctx.closePath();
             ctx.fill();
@@ -181,30 +166,49 @@
             ctx.fillStyle = '#2a2a2a';
             ctx.beginPath();
             ctx.moveTo(0, canvas.height);
-            montañaAbajo.forEach(m => {
-                ctx.lineTo(m.x, canvas.height - m.h);
-                m.x -= 0.3;
-                if(m.x < -40) { m.x = canvas.width + 40; m.h = 40 + Math.random()*80; }
-            });
+            montañaAbajo.forEach(m => ctx.lineTo(m.x, canvas.height - m.h));
             ctx.lineTo(canvas.width, canvas.height);
             ctx.closePath();
             ctx.fill();
 
-            // 🛸 Mover nave
-            if(teclas['ArrowUp'] && nave.y > montañaArriba[0].h + 20) nave.y -= nave.vel;
-            if(teclas['ArrowDown'] && nave.y < canvas.height - montañaAbajo[0].h - nave.h - 10) nave.y += nave.vel;
-            if(teclas['ArrowRight'] && nave.x < canvas.width - nave.w - 20) nave.x += nave.vel;
-            if(teclas['ArrowLeft'] && nave.x > 20) nave.x -= nave.vel;
+            // 🛸 Nave/Ovni
+            ctx.fillStyle = '#c0c0c0';
+            ctx.beginPath();
+            ctx.ellipse(nave.x + 25, nave.y + 17, 25, 14, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffff00';
+            ctx.fillRect(nave.x + 10, nave.y + 18, 5, 5);
+            ctx.fillRect(nave.x + 22, nave.y + 22, 5, 5);
+            ctx.fillRect(nave.x + 35, nave.y + 18, 5, 5);
 
-            // 🔫 Disparo con barra espaciadora
-            if(teclas[' '] && Date.now() - ultimoDisparo > 350) {
-                balas.push({x: nave.x + nave.w, y: nave.y + nave.h/2 - 3, w: 12, h: 6});
-                ultimoDisparo = Date.now();
-            }
+            // 🔫 Balas
+            ctx.fillStyle = '#ffeb3b';
+            balas.forEach(b => ctx.fillRect(b.x, b.y, b.w, b.h));
 
-            // Mover balas
-            balas = balas.filter(b => {
-                b.x += 10;
-                ctx.fillStyle = '#ffeb3b';
-                ctx.fillRect(b.x, b.y, b.w, b.h);
-                return
+            // 👾 Aliens
+            ctx.fillStyle = '#ff0066';
+            aliens.forEach(a => {
+                ctx.beginPath();
+                ctx.arc(a.x + 17, a.y + 12, 15, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#000';
+                ctx.fillRect(a.x + 8, a.y + 8, 4, 4);
+                ctx.fillRect(a.x + 22, a.y + 8, 4, 4);
+                ctx.fillStyle = '#ff0066';
+            });
+
+            // 🍎 Comida
+            ctx.font = '24px Arial';
+            comida.forEach(c => ctx.fillText(c.tipo, c.x, c.y + 20));
+        }
+
+        function loop() {
+            actualizar();
+            dibujar();
+            requestAnimationFrame(loop);
+        }
+        loop();
+    </script>
+</body>
+</html>
+```
