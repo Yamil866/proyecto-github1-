@@ -5,8 +5,8 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #000; overflow: hidden; font-family: Arial; }
-        canvas { display: block; background: #000; }
-        .ui { position: absolute; top: 10px; left: 15px; color: white; z-index: 10; font-size: 16px; }
+        canvas { display: block; background: #000; position: absolute; top:0; left:0; z-index:1; }
+        .ui { position: absolute; top: 10px; left: 15px; color: white; z-index: 10; font-size: 16px; pointer-events:none; }
         .barra-vida {
             width: 220px; height: 22px; background: #333;
             border: 2px solid #666; border-radius: 5px; margin-top: 5px;
@@ -16,7 +16,7 @@
             border-radius: 3px; transition: width 0.3s;
         }
         .volver { position: absolute; top: 10px; right: 15px; color: #aaa; text-decoration: none; font-size: 14px; z-index: 20; }
-        .marvin { position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%); color: #ffeb3b; font-size: 14px; z-index: 10; }
+        .marvin { position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%); color: #ffeb3b; font-size: 14px; z-index: 10; pointer-events:none; }
 
         /* 🟦 BOTONES TÁCTILES PARA CELULAR */
         .controles {
@@ -105,68 +105,29 @@
                 y: Math.random() * canvas.height,
                 tam: Math.random() * 1.5 + 0.3,
                 parpadeo: Math.random()
-                <!DOCTYPE html>
-<html>
-<head>
-    <title>👽 Rescate a Marvin — Jefe Final</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #000; overflow: hidden; font-family: Arial; }
-        canvas { display: block; background: #000; }
-        .ui { position: absolute; top: 10px; left: 15px; color: white; z-index: 10; font-size: 18px; }
-        .barra-vida {
-            width: 250px; height: 25px; background: #333;
-            border: 2px solid #666; border-radius: 5px; margin-top: 5px;
-        }
-        .vida-jefe {
-            height: 100%; width: 100%; background: linear-gradient(90deg, #c00, #f00);
-            border-radius: 3px; transition: width 0.3s;
-        }
-        .volver { position: absolute; top: 10px; right: 15px; color: #aaa; text-decoration: none; font-size: 16px; z-index: 20; }
-        .marvin { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); color: #ffeb3b; font-size: 16px; z-index: 10; }
-    </style>
-</head>
-<body>
-    <a href="index.html" class="volver">← Volver</a>
-    <div class="marvin">👽 ¡Ayúdame, Yamil! ¡No dejes que el Jefe me lleve! 🔗</div>
-    <div class="ui">
-        👹 JEFE MARCIANO — Nivel Final<br>
-        <div class="barra-vida"><div class="vida-jefe" id="barra-jefe"></div></div>
-        <span id="porcentaje">100%</span>
-        <br><br>
-        ❤️ Tu vida: <span id="vidas">❤️❤️❤️</span>
-        &nbsp;&nbsp;💥 Puntos: <span id="puntaje">0</span>
-    </div>
-    <canvas id="juego"></canvas>
-
-    <script>
-        const canvas = document.getElementById('juego');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        let nave = { x: 100, y: canvas.height/2, w: 50, h: 35, vel: 5 };
-        let jefe = { 
-            x: canvas.width - 180, y: canvas.height/2 - 80, 
-            w: 120, h: 100, vida: 100, maxVida: 100, 
-            fase: 1, direccion: 1, contador: 0
-        };
-        let balas = [], balasJefe = [], comida = [];
-        let puntaje = 0, vidas = 3, teclas = {}, ultimoDisparo = 0;
-        let estrellas = [], jefeDerrotado = false;
-
-        // 🍎 Comida/frutas
-        const frutas = ['🍎', '🍊', '🍇', '🍓', '🥕', '🌽', '🍌'];
-
-        // ⭐ Estrellas
-        for(let i = 0; i < 200; i++) {
-            estrellas.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                tam: Math.random() * 1.5 + 0.3,
-                parpadeo: Math.random()
             });
         }
+
+        // 🟡 EVENTOS PARA LOS BOTONES TÁCTILES
+        const btnArriba = document.getElementById('btnArriba');
+        const btnAbajo = document.getElementById('btnAbajo');
+        const btnIzquierda = document.getElementById('btnIzquierda');
+        const btnDerecha = document.getElementById('btnDerecha');
+        const btnDisparo = document.getElementById('btnDisparo');
+
+        function presionar(boton) { teclas[boton] = true; }
+        function soltar(boton) { teclas[boton] = false; }
+
+        btnArriba.addEventListener('touchstart', (e) => {e.preventDefault(); presionar('ArrowUp');});
+        btnArriba.addEventListener('touchend', (e) => {e.preventDefault(); soltar('ArrowUp');});
+        btnAbajo.addEventListener('touchstart', (e) => {e.preventDefault(); presionar('ArrowDown');});
+        btnAbajo.addEventListener('touchend', (e) => {e.preventDefault(); soltar('ArrowDown');});
+        btnIzquierda.addEventListener('touchstart', (e) => {e.preventDefault(); presionar('ArrowLeft');});
+        btnIzquierda.addEventListener('touchend', (e) => {e.preventDefault(); soltar('ArrowLeft');});
+        btnDerecha.addEventListener('touchstart', (e) => {e.preventDefault(); presionar('ArrowRight');});
+        btnDerecha.addEventListener('touchend', (e) => {e.preventDefault(); soltar('ArrowRight');});
+        btnDisparo.addEventListener('touchstart', (e) => {e.preventDefault(); presionar(' ');});
+        btnDisparo.addEventListener('touchend', (e) => {e.preventDefault(); soltar(' ');});
 
         document.addEventListener('keydown', e => teclas[e.key] = true);
         document.addEventListener('keyup', e => teclas[e.key] = false);
@@ -302,7 +263,7 @@
             estrellas.forEach(s => {
                 s.parpadeo += 0.02;
                 const alfa = 0.3 + Math.abs(Math.sin(s.parpadeo)) * 0.7;
-                ctx.fillStyle = rgba(255, 255, 255, ${alfa});
+                ctx.fillStyle = `rgba(255, 255, 255, ${alfa})`;
                 ctx.beginPath();
                 ctx.arc(s.x, s.y, s.tam, 0, Math.PI * 2);
                 ctx.fill();
@@ -316,7 +277,7 @@
                 ctx.fillText('🎉 ¡VICTORIA! 🎉', canvas.width/2, canvas.height/2 - 40);
                 ctx.font = '24px Arial';
                 ctx.fillStyle = '#fff';
-                ctx.fillText(Puntaje final: ${puntaje}, canvas.width/2, canvas.height/2 + 10);
+                ctx.fillText(`Puntaje final: ${puntaje}`, canvas.width/2, canvas.height/2 + 10);
                 ctx.fillText('¡Rescataste a Marvin y derrotaste al Jefe!', canvas.width/2, canvas.height/2 + 50);
                 ctx.fillText('Marvin dice: ¡Gracias, amigo! 👽🤝🛸', canvas.width/2, canvas.height/2 + 90);
                 return;
@@ -361,17 +322,15 @@
                 ctx.fillText('💀 DERROTADO', canvas.width/2, canvas.height/2 - 30);
                 ctx.fillStyle = '#fff';
                 ctx.font = '22px Arial';
-                ctx.fillText(Puntos: ${puntaje}, canvas.width/2, canvas.height/2 + 10);
+                ctx.fillText(`Puntos: ${puntaje}`, canvas.width/2, canvas.height/2 + 10);
                 ctx.fillText('Recargá la página para intentarlo de nuevo', canvas.width/2, canvas.height/2 + 50);
                 return;
             }
         }
 
         function loop() {
-            if(!jefeDerrotado && vidas > 0) {
-                actualizar();
-                dibujar();
-            }
+            actualizar();
+            dibujar();
             requestAnimationFrame(loop);
         }
         loop();
@@ -383,7 +342,3 @@
     </script>
 </body>
 </html>
-            });
-        }
-
-        // 🟡 EVENTOS
