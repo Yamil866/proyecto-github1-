@@ -14,8 +14,7 @@
 <body>
     <a href="index.html" class="volver">← Volver</a>
     <div class="ui">
-        🔧 Partes encontradas: <span id="partes">0</span>/5
-        <br>
+        🔧 Partes encontradas: <span id="partes">0</span>/5<br>
         📦 Inventario: <span id="inventario">Vacío</span>
     </div>
     <div class="instruccion">⬅️➡️⬆️⬇️ Flechas para moverte | ¡Encontrá las 5 partes perdidas!</div>
@@ -33,9 +32,8 @@
         let partes = [];
         let obstaculos = [];
         let teclas = {};
-        let caminos = [];
 
-        // Generar terreno y caminos
+        // Generar obstáculos
         for(let i=0; i<15; i++) {
             obstaculos.push({
                 x: Math.random()*(canvas.width - 100) + 50,
@@ -46,7 +44,7 @@
             });
         }
 
-        // Colocar partes de la nave en lugares aleatorios
+        // Colocar partes de la nave en posiciones válidas
         partesNecesarias.forEach((nombre, i) => {
             let posValida = false;
             let intentos = 0;
@@ -56,7 +54,8 @@
                 py = Math.random()*(canvas.height - 150) + 75;
                 posValida = true;
                 for(let o of obstaculos) {
-                    if(px < o.x + o.w + 30 && px + 30 > o.x - 30 && py < o.y + o.h + 30 && py + 30 > o.y - 30) {
+                    if(px < o.x + o.w + 30 && px + 30 > o.x - 30 && 
+                       py < o.y + o.h + 30 && py + 30 > o.y - 30) {
                         posValida = false;
                         break;
                     }
@@ -69,7 +68,50 @@
         document.addEventListener('keydown', e => teclas[e.key] = true);
         document.addEventListener('keyup', e => teclas[e.key] = false);
 
-        function loop() {
+        function actualizar() {
+            // Mover jugador
+            let movX = 0, movY = 0;
+            if(teclas['ArrowUp']) movY -= jugador.vel;
+            if(teclas['ArrowDown']) movY += jugador.vel;
+            if(teclas['ArrowLeft']) movX -= jugador.vel;
+            if(teclas['ArrowRight']) movX += jugador.vel;
+
+            // Nueva posición
+            let nuevoX = jugador.x + movX;
+            let nuevoY = jugador.y + movY;
+
+            // Límites de pantalla
+            if(nuevoX < 0 || nuevoX + jugador.tam > canvas.width) nuevoX = jugador.x;
+            if(nuevoY < 0 || nuevoY + jugador.tam > canvas.height) nuevoY = jugador.y;
+
+            // Colisión con obstáculos
+            let puedeMoverse = true;
+            for(let o of obstaculos) {
+                if(nuevoX < o.x + o.w && nuevoX + jugador.tam > o.x &&
+                   nuevoY < o.y + o.h && nuevoY + jugador.tam > o.y) {
+                    puedeMoverse = false;
+                    break;
+                }
+            }
+            if(puedeMoverse) {
+                jugador.x = nuevoX;
+                jugador.y = nuevoY;
+            }
+
+            // Recolectar partes
+            partes.forEach(p => {
+                if(!p.recolectada &&
+                   jugador.x < p.x + 30 && jugador.x + jugador.tam > p.x &&
+                   jugador.y < p.y + 30 && jugador.y + jugador.tam > p.y) {
+                    p.recolectada = true;
+                    partesEncontradas.push(p.nombre);
+                    document.getElementById('partes').textContent = partesEncontradas.length;
+                    document.getElementById('inventario').textContent = partesEncontradas.join(', ');
+                }
+            });
+        }
+
+        function dibujar() {
             ctx.fillStyle = '#05051a';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -100,5 +142,23 @@
                 }
             });
 
-            // 🛸 Mover jugador
-            let movX = 0, mo
+            // Dibujar ovni/jugador
+            ctx.fillStyle = '#c0c0c0';
+            ctx.beginPath();
+            ctx.ellipse(jugador.x + 20, jugador.y + 20, 22, 12, 0, 0, Math.PI*2);
+            ctx.fill();
+            ctx.fillStyle = '#ffff00';
+            ctx.fillRect(jugador.x + 8, jugador.y + 20, 5, 5);
+            ctx.fillRect(jugador.x + 17, jugador.y + 23, 5, 5);
+            ctx.fillRect(jugador.x + 26, jugador.y + 20, 5, 5);
+        }
+
+        function loop() {
+            actualizar();
+            dibujar();
+            requestAnimationFrame(loop);
+        }
+        loop();
+    </script>
+</body>
+</html>
