@@ -6,15 +6,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: linear-gradient(180deg, #0a0a2e 0%, #1a1a4e 100%);
-            min-height: 10
-<!DOCTYPE html>
-<html>
-<head>
-    <title>🗺️ Mapa Galáctico</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background: linear-gradient(180deg, #0a0a2e 0%, #1a1a4e 100%);
             min-height: 100vh;
             font-family: Arial, sans-serif;
             color: white;
@@ -117,4 +108,108 @@
 
         function dibujarMapa() {
             const mapa = document.getElementById('mapa');
-            mapa.innerHTML = '<div 
+            mapa.innerHTML = 
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Explorar 🗺️</title>
+    <style>
+        body { background: #001a33; color: white; font-family: Arial; text-align: center; }
+        canvas { border: 2px solid #00ffff; }
+        a { color: #00ffff; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <h1>🗺️ EXPLORADOR DE TERRENOS</h1>
+    <a href="index.html">← Volver al Hangar</a><br><br>
+    <canvas id="mapa" width="800" height="500"></canvas>
+
+    <script>
+        const canvas = document.getElementById('mapa');
+        const ctx = canvas.getContext('2d');
+
+        let ovni = {x: 50, y: 400, w: 40, h: 25, vel: 3};
+        let partes = [];
+        let terreno = [];
+        let recolectadas = 0;
+
+        // Generar terreno
+        for(let i=0; i<20; i++){
+            terreno.push({
+                x: i*50,
+                y: 420 + Math.random()*60,
+                ancho: 50,
+                alto: 100
+            });
+        }
+
+        // Partes de nave
+        for(let i=0; i<5; i++){
+            partes.push({
+                x: 150 + i*150,
+                y: 380,
+                recolectada: false
+            });
+        }
+
+        let teclas = {};
+        document.addEventListener('keydown', e => teclas[e.key] = true);
+        document.addEventListener('keyup', e => teclas[e.key] = false);
+
+        function actualizar(){
+            if(teclas['ArrowRight'] && ovni.x < 760) ovni.x += ovni.vel;
+            if(teclas['ArrowLeft'] && ovni.x > 0) ovni.x -= ovni.vel;
+
+            // Recolectar partes
+            partes.forEach(p => {
+                if(!p.recolectada && ovni.x < p.x+20 && ovni.x+ovni.w > p.x && ovni.y < p.y+20 && ovni.y+ovni.h > p.y){
+                    p.recolectada = true;
+                    recolectadas++;
+                }
+            });
+        }
+
+        function dibujar(){
+            ctx.fillStyle = '#001a33';
+            ctx.fillRect(0,0,800,500);
+
+            // Estrellas
+            ctx.fillStyle = '#fff';
+            for(let i=0; i<60; i++){
+                ctx.fillRect((i*17)%800, (i*23)%400, 1.5, 1.5);
+            }
+
+            // Terreno
+            ctx.fillStyle = '#2d4d66';
+            terreno.forEach(t => ctx.fillRect(t.x, t.y, t.ancho, t.alto));
+
+            // Partes
+            partes.forEach(p => {
+                if(!p.recolectada){
+                    ctx.fillStyle = '#ffeb3b';
+                    ctx.fillRect(p.x, p.y, 20, 20);
+                }
+            });
+
+            // Ovni
+            ctx.fillStyle = '#c0c0c0';
+            ctx.beginPath();
+            ctx.ellipse(ovni.x+20, ovni.y+12, 20, 10, 0, 0, Math.PI*2);
+            ctx.fill();
+            ctx.fillStyle = '#ffff00';
+            ctx.fillRect(ovni.x+8, ovni.y+14, 4, 4);
+            ctx.fillRect(ovni.x+18, ovni.y+16, 4, 4);
+            ctx.fillRect(ovni.x+28, ovni.y+14, 4, 4);
+
+            // Contador
+            ctx.fillStyle = '#fff';
+            ctx.font = '18px Arial';
+            ctx.fillText('Partes recolectadas: ' + recolectadas + '/5', 10, 30);
+            ctx.fillText('← → Flechas para moverte', 10, 55);
+        }
+
+        function loop(){ actualizar(); dibujar(); requestAnimationFrame(loop); }
+        loop();
+    </script>
+</body>
+</html>
